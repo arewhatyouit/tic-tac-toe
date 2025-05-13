@@ -30,7 +30,7 @@ function Gameboard() {
       // Our board's outermost array represents the row,
       // so we need to loop through the rows, starting at row 0,
       // find all the rows that don't have a token, then take the
-      // last one, which will represent the bottom-most empty cell
+      // last one, which will represent the bottom-most empty 
       const availableCells = board.filter((row) => row[column].getValue() === 0).map(row => row[column]);
   
       // If no cells make it through the filter, 

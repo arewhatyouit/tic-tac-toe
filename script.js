@@ -1,35 +1,66 @@
-//Create a 3x3 gameboard in the console (Use nested loops)
 function Gameboard() {
+  //initial creation of a gameboard with 3 columns and 3 rows
   const rows = 3;
   const columns = 3;
   const board = [];
 
-  //x2 nested loops to generate game board, i checks the rows, j checks the columns. The value of "CellValue" is pushed to each cell
+  //creating an instance of cellValue() to populate the board
+  const cellValue = CellValue();
+
   for (let i = 0; i < rows; i++) {
     board[i] = [];
     for (let j = 0; j < columns; j++) {
       board[i].push(CellValue());
     }
+  };
+
+  //method to acesss board to future UI
+  function outputBoard() {
+    return board;
+  };
+
+  //function for player to place token
+  function placeToken(row, column, player) {
+    board[row][column].assignCell(player);
+  };
+
+  // function to update gameboard with new values
+  function printBoard() {
+    const boardValues = board.map(row => 
+      row.map(cell => cell.outputValue())
+    );
+    console.log(boardValues);
   }
 
-  console.log(board);
+ return {
+  outputBoard, placeToken, printBoard
+ }
+
 }
 
-//Renders game board on the console
-Gameboard();
-
-//Defines the value of each cell
+//function to set the cell value, 0 for initial value, 1 for player one, 2 for player two
 function CellValue() {
+  //set initial value of all cells to 0
   let value = 0;
-  return value;
+  //create method to re-assignCell value to playernumber
+  function assignCell(player) {
+    value = player;
+  }
+  //create method to output final value to be used in Gameboard()
+  function outputValue() {
+    return value;
+  }
+  //return the methods assignCell and outputValue to be used outside the function
+  return { assignCell, outputValue };
 }
 
-//Player places a piece by calling a function with a value for X and Y as an argument. Both X and Y have a range of 0-2 (3 total)
-//Board array updates with an element in this format [x, y]
-const takeTurn = () => {};
+function updateGameboard() {}
 
-//Push the contents of the board array to the rendered gameboard
-const printBoard = () => {};
+// Test code
+const gameBoard = Gameboard();
+console.log("Initial board:");
+gameBoard.printBoard();
 
-//Check for 3 in a row or a tie game, if none reset into next players turn
-const checkWin = () => {};
+console.log("Placing token at [0,0]:");
+gameBoard.placeToken(0, 0, 1);
+gameBoard.printBoard();
