@@ -12,30 +12,36 @@ function Gameboard() {
     for (let j = 0; j < columns; j++) {
       board[i].push(CellValue());
     }
-  };
+  }
 
   //method to acesss board to future UI
   function outputBoard() {
     return board;
-  };
+  }
 
   //function for player to place token
   function placeToken(row, column, player) {
-    board[row][column].assignCell(player);
-  };
+    //Token placement validation
+    if (board[row][column].outputValue() !== 0) {
+      console.log(`Invalid play, choose again.`);
+    } else {
+      board[row][column].assignCell(player);
+    }
+  }
 
   // function to update gameboard with new values
   function printBoard() {
-    const boardValues = board.map(row => 
-      row.map(cell => cell.outputValue())
+    const boardValues = board.map((row) =>
+      row.map((cell) => cell.outputValue())
     );
     console.log(boardValues);
   }
 
- return {
-  outputBoard, placeToken, printBoard
- }
-
+  return {
+    outputBoard,
+    placeToken,
+    printBoard
+  };
 }
 
 //function to set the cell value, 0 for initial value, 1 for player one, 2 for player two
@@ -54,13 +60,59 @@ function CellValue() {
   return { assignCell, outputValue };
 }
 
-function updateGameboard() {}
+function gameFlow(playerOne = "Player One", playerTwo = "Player Two") {
+
+  const board = Gameboard();
+
+  //Array to store player information, needs to include the players name and the players' tokens "x" and "o"
+  const players = [
+    {
+      name: playerOne,
+      token: 1
+    },
+    {
+      name: playerTwo,
+      token: 2
+    }
+  ];
+
+  //Sets initial player activePlayer state to player 0
+  let activePlayer = players[0];
+
+  function changeActivePlayer() {
+    if (activePlayer === players[0]) {
+      activePlayer = players[1];
+    } else {
+      activePlayer = players[0];
+    }
+    console.log(`Active player is now ${players.name}.`);
+  }
+
+  function getActivePlayer() {
+    return activePlayer;
+  }
+}
+
+// Logic for selecting a winnder
+// Logic to reset game once winner is selected
 
 // Test code
-const gameBoard = Gameboard();
-console.log("Initial board:");
-gameBoard.printBoard();
+const selectPlayerTest = gameFlow();
+console.log(selectPlayerTest.getActivePlayer())
 
-console.log("Placing token at [0,0]:");
-gameBoard.placeToken(0, 0, 1);
-gameBoard.printBoard();
+// const gameBoard = Gameboard();
+
+// console.log("Initial board:");
+// gameBoard.printBoard();
+
+// console.log("Player 2 placing token at [0,0]:");
+// gameBoard.placeToken(0, 0, 2);
+// gameBoard.printBoard();
+
+// console.log("Player 2 placing second token at [0,0]:");
+// gameBoard.placeToken(0, 0, 2);
+// gameBoard.printBoard();
+
+// console.log("Player 1 placing token at [0,1]:");
+// gameBoard.placeToken(0, 1, 1);
+// gameBoard.printBoard();
