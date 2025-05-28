@@ -113,11 +113,30 @@ function GameFlow() {
     console.log(
       `Placing ${currentPlayer.name}'s token on (${row}, ${column}).`
     );
+
+    // Place token, store in moveSucessful to allow for player change.
     const moveSuccessful = board.placeToken(row, column, currentPlayer.token);
+    const winCheck = selectWinner();
+
+    const rowWin = winCheck.rowWin(row, currentPlayer.token);
+    const columnWin = winCheck.columnWin(column, currentPlayer.token);
+
+    console.log(`Current player is ${currentPlayer.token}.`)
+    console.log(`rowWin is ${rowWin}`);
+    console.log(`columnWin is ${columnWin}`);
+
+    if (rowWin === true || columnWin === true) {
+      console.log(`Player ${currentPlayer.token}, you've won. Play again?`);
+    }
+
     if (moveSuccessful) {
       changeCurrentPlayer();
     }
+
+    // Console log printing board post placement.
     console.log(board.printBoard());
+
+    // Console log to confirm next player's turn
     console.log(`${currentPlayer.name}'s turn.`);
   }
 
@@ -127,7 +146,8 @@ function GameFlow() {
 
   //TODO Create module in function "selectWinner" for diagonals.
   function selectWinner() {
-    function rowWin(row) {
+
+    function rowWin(row, player) {
       const winnerBoard = board.printBoard(row);
 
       // const winnerBoard = {
@@ -144,14 +164,7 @@ function GameFlow() {
           break;
         }
       }
-
-      if (winTrue === true) {
-        console.log(`Player ${player}, you've won. Play again?`);
-      } else {
-        console.log(`Player ${player}, you've lost. Play again?`);
-      }
-      
-      console.log(winTrue);
+      return winTrue;
     }
 
     function columnWin(column, player) {
@@ -162,23 +175,16 @@ function GameFlow() {
       // }
 
       const winnerBoard = board.printBoard(column);
-      console.log(winnerBoard);
-      let winTrue = false;
+      console.log(winnerBoard, player);
+      let winTrue = true;
 
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 2; i++) { //FIXME: Running into false win condition when there is a 1 in r1c1 and r2c1.
         if (winnerBoard[i][column] !== player) {
-          winTrue = true;
+          winTrue = false;
           break;
         }
       }
-
-      if (winTrue === true) {
-        console.log(`Player ${player}, you've won. Play again?`);
-      } else {
-        console.log(`Player ${player}, you've lost. Play again?`);
-      }
-
-      console.log(winTrue);
+      return winTrue;
     }
 
     return {
