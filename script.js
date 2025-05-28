@@ -13,7 +13,6 @@ function Gameboard() {
     }
   }
 
-
   function placeToken(row, column, player) {
     // First check if the cell is empty
     if (board[row][column].outputValue() !== 0) {
@@ -60,8 +59,12 @@ function CellValue() {
   function outputValue() {
     return value;
   }
+
   //return the methods assignCell and outputValue to be used outside the function
-  return { assignCell, outputValue };
+  return {
+    assignCell,
+    outputValue
+  };
 }
 
 function GameFlow() {
@@ -80,8 +83,6 @@ function GameFlow() {
     }
   ];
 
-  // console.log(board.printBoard());
-
   //Sets initial player activePlayer state to player 0
 
   let currentPlayerIndex = 0;
@@ -89,7 +90,6 @@ function GameFlow() {
 
   //Method to change the current player
   function changeCurrentPlayer() {
-
     if (currentPlayerIndex === 0) {
       currentPlayerIndex = 1;
     } else {
@@ -121,6 +121,72 @@ function GameFlow() {
     console.log(`${currentPlayer.name}'s turn.`);
   }
 
+  function getBoard() {
+    return board.printBoard();
+  }
+
+  //TODO Create module in function "selectWinner" for diagonals.
+  function selectWinner() {
+    function rowWin(row) {
+      const winnerBoard = board.printBoard(row);
+
+      // const winnerBoard = {
+      //   0: [1, 1, 1],
+      //   1: [0, 0, 0],
+      //   2: [0, 0, 0]
+      // }
+
+      console.log(winnerBoard, player);
+      let winTrue = true;
+      for (element of winnerBoard[row]) {
+        if (element !== player) {
+          winTrue = false;
+          break;
+        }
+      }
+
+      if (winTrue === true) {
+        console.log(`Player ${player}, you've won. Play again?`);
+      } else {
+        console.log(`Player ${player}, you've lost. Play again?`);
+      }
+      
+      console.log(winTrue);
+    }
+
+    function columnWin(column, player) {
+      // const winnerBoard = {
+      //   0: [1, 0, 0],
+      //   1: [1, 0, 0],
+      //   2: [1, 0, 0]
+      // }
+
+      const winnerBoard = board.printBoard(column);
+      console.log(winnerBoard);
+      let winTrue = false;
+
+      for (let i = 0; i < 2; i++) {
+        if (winnerBoard[i][column] !== player) {
+          winTrue = true;
+          break;
+        }
+      }
+
+      if (winTrue === true) {
+        console.log(`Player ${player}, you've won. Play again?`);
+      } else {
+        console.log(`Player ${player}, you've lost. Play again?`);
+      }
+
+      console.log(winTrue);
+    }
+
+    return {
+      rowWin,
+      columnWin
+    };
+  }
+
   //Start of new game message to console.
   startNewRound();
 
@@ -128,14 +194,21 @@ function GameFlow() {
     changeCurrentPlayer,
     getCurrentPlayer,
     playRound,
-    startNewRound
+    startNewRound,
+    getBoard,
+    selectWinner
   };
 }
 
+// the variable "game" and function "playGame" are to help debug the game in the console, and won't be used later on
 const game = GameFlow();
 function playGame(row, column) {
   game.playRound(row, column);
 }
 
-// Logic for selecting a winnder
+//or selecting a winner
 // Logic to reset game once winner is selected
+
+//   console.log("console.log: Function selectWinner has executed.");
+//   return winTrue;
+// }
