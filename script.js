@@ -129,38 +129,46 @@ function GameFlow() {
   }
 
   function playRound(row, column) {
-
     let playAgain;
     let checkToken = false;
 
-//TODO fix validation loop
+    //TODO fix validation loop - does this need to be done before implementing the UI?
 
-while (!checkToken) {
-  if (/* check if input is valid */) {
-    validInput = true;
-  } else {
-    playAgain = prompt('Invalid input, please type "y" or "n"');
-  }
-}
+    // while (!checkToken) {
+    //   if (/* check if input is valid */) {
+    //     validInput = true;
+    //   } else {
+    //     playAgain = prompt('Invalid input, please type "y" or "n"');
+    //   }
+    // }
 
     function checkPrompt() {
-    if (playAgain === "YES" || playAgain === "Y" || playAgain === "yes" || playAgain === "y") {
-      console.log(`debug: playAgain = ${playAgain}`)
-      resetAll();
-      console.log(`${currentPlayer.name}'s turn.`);
-    } else if (playAgain === "NO" || playAgain === "N" || playAgain === "no") {
-      playAgain = "n";
-      console.log(`debug: playAgain = ${playAgain}`)
-    } else if (playAgain !== "y" || playAgain !== "n") {
-      console.log(`debug: !== if triggered, playAgain = ${playAgain}`)
-      playAgain = prompt('Invalid input, please type "y" or "n"');
-    } else {
-      alert("Thanks for playing! See you again next time.");
+      if (
+        playAgain === "YES" ||
+        playAgain === "Y" ||
+        playAgain === "yes" ||
+        playAgain === "y"
+      ) {
+        console.log(`debug: playAgain = ${playAgain}`);
+        resetAll();
+        console.log(`${currentPlayer.name}'s turn.`);
+      } else if (
+        playAgain === "NO" ||
+        playAgain === "N" ||
+        playAgain === "no"
+      ) {
+        playAgain = "n";
+        console.log(`debug: playAgain = ${playAgain}`);
+      } else if (playAgain !== "y" || playAgain !== "n") {
+        console.log(`debug: !== if triggered, playAgain = ${playAgain}`);
+        playAgain = prompt('Invalid input, please type "y" or "n"');
+      } else {
+        alert("Thanks for playing! See you again next time.");
+        return;
+      }
+
       return;
     }
-    
-    return;
-  }
 
     console.log(
       `Placing ${currentPlayer.name}'s token on (${row}, ${column}).`
@@ -175,10 +183,13 @@ while (!checkToken) {
     console.log(`debug: Current player is ${currentPlayer.token}.`);
     console.log(`debug: win is ${win}`);
 
-    if (win) {
+    if (tie) {
+    } else if (win) {
       console.log(`debug: Player ${currentPlayer.token} wins!`);
       console.log(board.printBoard());
-      playAgain = prompt(`Yay! Player ${currentPlayer.token}, you've won. Play again? (y/n)`);
+      playAgain = prompt(
+        `Yay! Player ${currentPlayer.token}, you've won. Play again? (y/n)`
+      );
       firstInput = false;
       checkPrompt();
     }
@@ -191,12 +202,7 @@ while (!checkToken) {
 
     // Console log to confirm next player's turn
     console.log(`${currentPlayer.name}'s turn.`);
-
   }
-
-    // console.log("debug: invalidInput() triggered");
-    // let playAgain = prompt('Invalid input, please type "y" or "n"');
-
 
   function getBoard() {
     return board.printBoard();
@@ -266,6 +272,25 @@ while (!checkToken) {
       return win;
     }
 
+    function tie() {
+      const tieBoard = board.printBoard();
+      let tieToken = true;
+
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+          if (tieBoard[i][j] !== 0) {
+            tieToken = false;
+            break;
+          } else {
+            return tieToken;
+          }
+        }
+      }
+
+      return tieToken;
+    }
+
+    console.log(`debug: tieToken = ${tieToken}`);
     return { win };
   }
 
@@ -282,50 +307,8 @@ while (!checkToken) {
     resetPlayers
   };
 }
-
-// function handleReset() {
-//   // Setup reset as a function wide variable
-//   let reset = "";
-
-//   function resetGame() {
-//     if (reset === "y") {
-//       startGame();
-//     } else if (reset === null || reset == "") {
-//       invalid();
-//     }
-//   }
-
-//   function invalid() {
-//     reset = prompt(
-//       `Invalid input, please type either "y" or "n". Play again? (y/n)`
-//     );
-//     if (reset === "y") {
-//       startGame();
-//     } else if (reset === null || reset == "") {
-//       invalid();
-//     }
-//   }
-
-//   function startGame() {
-//     game = GameFlow();
-//   }
-
-//   return {
-//     resetGame,
-//     startGame,
-//     invalid
-//   };
-// }
-
 // the variable "game" and function "playGame" are to help debug the game in the console, and won't be used later on
 let game = GameFlow();
 function playGame(row, column) {
   game.playRound(row, column);
 }
-
-//or selecting a winner
-// Logic to reset game once winner is selected
-
-//   console.log("console.log: Function selectWinner has executed.");
-//   return winTrue;
-// }
