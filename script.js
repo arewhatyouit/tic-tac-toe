@@ -14,6 +14,8 @@ function Gameboard() {
     }
   }
 
+
+  
   // Function to place a tolken in a specific space in the board using a 0,1,2 3x3 grid
   function placeToken(row, column, player) {
     if (board[row][column].outputValue() !== 0) {
@@ -96,11 +98,6 @@ function GameFlow() {
 
   resetAll();
 
-  function resetAll() {
-    board.resetBoard();
-    resetPlayers();
-  }
-
   //Sets initial player activePlayer state to player 0
   function resetPlayers() {
     currentPlayerIndex = 0;
@@ -125,22 +122,11 @@ function GameFlow() {
 
   function startNewRound() {
     board.printBoard();
-    console.log(`${currentPlayer.name}'s turn.`);
+    // console.log(`${currentPlayer.name}'s turn.`);
   }
 
   function playRound(row, column) {
     let playAgain;
-    let checkToken = false;
-
-    //TODO create validation loop to check for correct input (DO I ACTUALLY NEED THIS?)
-
-    // while (!checkToken) {
-    //   if (/* check if input is valid */) {
-    //     validInput = true;
-    //   } else {
-    //     playAgain = prompt('Invalid input, please type "y" or "n"');
-    //   }
-    // }
 
     function checkPrompt() {
       if (
@@ -184,19 +170,23 @@ function GameFlow() {
     console.log(`debug: Current player is ${currentPlayer.token}.`);
     console.log(`debug: win is ${win}`);
 
-    if (tie) {
-      console.log(`debug: Player's have tied!`);
-      console.log(board.printBoard());
-    } else if (win) {
-      console.log(`debug: Player ${currentPlayer.token} wins!`);
+    if (win) {
+      console.log(`Player ${currentPlayer.token} wins!`);
       console.log(board.printBoard());
       playAgain = prompt(
         `Yay! Player ${currentPlayer.token}, you've won. Play again? (y/n)`
       );
-      firstInput = false;
+      // checkPrompt();
+      return; // Exit the function - game is over
+    } else if (tie) {
+      console.log(`It's a tie!`);
+      console.log(board.printBoard());
+      playAgain = prompt(`It's a tie! Play again? (y/n)`);
       checkPrompt();
+      return; // Exit the function - game is over
     }
 
+    // Only change players if the game continues
     if (moveSuccessful) {
       changeCurrentPlayer();
     }
@@ -218,7 +208,7 @@ function GameFlow() {
       const winnerBoard = board.printBoard(row);
 
       let winTrue = true;
-      for (element of winnerBoard[row]) {
+      for (const element of winnerBoard[row]) {
         if (element !== player) {
           winTrue = false;
           break;
@@ -275,25 +265,18 @@ function GameFlow() {
       return win;
     }
 
-    //TODO complete tie function
-
     function tie() {
       const tieBoard = board.printBoard();
-      let tieToken = true;
 
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-          if (tieBoard[i][j] !== 0) {
-            tieToken = false;
-            return tieToken;
-          } else {
-            return tieToken;
+          if (tieBoard[i][j] === 0) {
+            return false;
           }
         }
       }
 
-      console.log(`debug: tieToken = ${tieToken}`);
-      return tieToken;
+      return true;
     }
 
     return { win, tie };
@@ -318,3 +301,25 @@ let game = GameFlow();
 function playGame(row, column) {
   game.playRound(row, column);
 }
+
+document.querySelectorAll('.cell').forEach( function(cell) {
+  cell.addEventListener('click', function() {
+    const row = parseInt(this.dataset.row);
+    const column = parseInt(this.dataset.column);
+    console.log(`You've clicked cell (${row}, ${column})`)
+
+
+    //Sets player token to either "x" or "o"
+    let player = game.getCurrentPlayer().token;
+    let playerToken = "";
+    if (player === 2) {
+      playerToken = "o";
+    } else {
+      playerToken = "x"
+    };
+
+    console.log(`Current player is: ${player}`)
+    this.textContent = playerToken;
+    game.playRound(row, column)
+  });
+});
