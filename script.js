@@ -127,7 +127,6 @@ function GameFlow() {
 
   function playRound(row, column) {
     let playAgain;
-
     function checkPrompt() {
       if (
         playAgain === "YES" ||
@@ -138,6 +137,7 @@ function GameFlow() {
         console.log(`debug: playAgain = ${playAgain}`);
         resetAll();
         console.log(`${currentPlayer.name}'s turn.`);
+        return;
       } else if (
         playAgain === "NO" ||
         playAgain === "N" ||
@@ -145,6 +145,7 @@ function GameFlow() {
       ) {
         playAgain = "n";
         console.log(`debug: playAgain = ${playAgain}`);
+        alert('Thanks for playing!')
       } else if (playAgain !== "y" || playAgain !== "n") {
         console.log(`debug: !== if triggered, playAgain = ${playAgain}`);
         playAgain = prompt('Invalid input, please type "y" or "n"');
@@ -176,7 +177,7 @@ function GameFlow() {
       playAgain = prompt(
         `Yay! Player ${currentPlayer.token}, you've won. Play again? (y/n)`
       );
-      // checkPrompt();
+      checkPrompt();
       return; // Exit the function - game is over
     } else if (tie) {
       console.log(`It's a tie!`);
@@ -308,6 +309,7 @@ document.querySelectorAll('.cell').forEach( function(cell) {
     const column = parseInt(this.dataset.column);
     console.log(`You've clicked cell (${row}, ${column})`)
 
+//TODO fix last placement to update before game finishes.
 
     //Sets player token to either "x" or "o"
     let player = game.getCurrentPlayer().token;
