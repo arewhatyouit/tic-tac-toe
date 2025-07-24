@@ -1,3 +1,5 @@
+const statusText = document.querySelector(".text");
+
 function Gameboard() {
   //initial creation of a gameboard with 3 columns and 3 rows, board is held in array.
   const rows = 3;
@@ -14,8 +16,6 @@ function Gameboard() {
     }
   }
 
-
-  
   // Function to place a tolken in a specific space in the board using a 0,1,2 3x3 grid
   function placeToken(row, column, player) {
     if (board[row][column].outputValue() !== 0) {
@@ -71,6 +71,8 @@ function CellValue() {
   };
 }
 
+//FIXME: Syntax error in GameFlow(), find the place where there is a missing bracket!
+
 //Function to control the flow of the game.
 function GameFlow() {
   //Creates the instance of the board we will be using for each playthrough
@@ -91,9 +93,19 @@ function GameFlow() {
     }
   ];
 
+  let gameActive = true;
+
   function resetAll() {
     board.resetBoard();
     resetPlayers();
+    //Flag for checking if game is active
+    gameActive = true;
+    //Reset gameboard UI
+    document.querySelectorAll(".cell").forEach(function (cell) {
+      cell.textContent = "";
+    });
+    //Reset status message
+    statusText.textContent = `${currentPlayer.name}'s turn`;
   }
 
   resetAll();
@@ -122,39 +134,13 @@ function GameFlow() {
 
   function startNewRound() {
     board.printBoard();
-    // console.log(`${currentPlayer.name}'s turn.`);
   }
 
   function playRound(row, column) {
-    let playAgain;
-    function checkPrompt() {
-      if (
-        playAgain === "YES" ||
-        playAgain === "Y" ||
-        playAgain === "yes" ||
-        playAgain === "y"
-      ) {
-        console.log(`debug: playAgain = ${playAgain}`);
-        resetAll();
-        console.log(`${currentPlayer.name}'s turn.`);
-        return;
-      } else if (
-        playAgain === "NO" ||
-        playAgain === "N" ||
-        playAgain === "no"
-      ) {
-        playAgain = "n";
-        console.log(`debug: playAgain = ${playAgain}`);
-        alert('Thanks for playing!')
-      } else if (playAgain !== "y" || playAgain !== "n") {
-        console.log(`debug: !== if triggered, playAgain = ${playAgain}`);
-        playAgain = prompt('Invalid input, please type "y" or "n"');
-      } else {
-        alert("Thanks for playing! See you again next time.");
-        return;
-      }
-
-      return;
+    if (!gameActive) {
+      statusText.textContent = "Game is over! Please reset to play again.";
+      console.log("Game is over! Please reset to play again.");
+      return; // Exit early if game is inactive
     }
 
     console.log(
@@ -168,28 +154,24 @@ function GameFlow() {
     const win = winCheck.win(row, column, currentPlayer.token);
     const tie = winCheck.tie();
 
-    console.log(`debug: Current player is ${currentPlayer.token}.`);
-    console.log(`debug: win is ${win}`);
-
     if (win) {
+      gameActive = false;
       console.log(`Player ${currentPlayer.token} wins!`);
       console.log(board.printBoard());
-      playAgain = prompt(
-        `Yay! Player ${currentPlayer.token}, you've won. Play again? (y/n)`
-      );
-      checkPrompt();
+      statusText.textContent = `Yay! Player ${currentPlayer.token}, you've won.`;
       return; // Exit the function - game is over
     } else if (tie) {
+      gameActive = false;
+      statusText.textContent = "It's a tie.";
       console.log(`It's a tie!`);
       console.log(board.printBoard());
-      playAgain = prompt(`It's a tie! Play again? (y/n)`);
-      checkPrompt();
       return; // Exit the function - game is over
     }
 
     // Only change players if the game continues
     if (moveSuccessful) {
       changeCurrentPlayer();
+      statusText.textContent = `${currentPlayer.name}'s turn`;
     }
 
     console.log(board.printBoard());
@@ -293,35 +275,49 @@ function GameFlow() {
     startNewRound,
     getBoard,
     selectWinner,
-    resetPlayers
+    resetPlayers,
+    resetAll,
+    isGameActive: () => gameActive
   };
 }
 
 // the variable "game" and function "playGame" are to help debug the game in the console, and won't be used later on
 let game = GameFlow();
+
 function playGame(row, column) {
   game.playRound(row, column);
 }
 
-document.querySelectorAll('.cell').forEach( function(cell) {
-  cell.addEventListener('click', function() {
+document.querySelectorAll(".cell").forEach(function (cell) {
+  cell.addEventListener("click", function () {
     const row = parseInt(this.dataset.row);
     const column = parseInt(this.dataset.column);
-    console.log(`You've clicked cell (${row}, ${column})`)
-
-//TODO fix last placement to update before game finishes.
+    console.log(`You've clicked cell (${row}, ${column})`);
 
     //Sets player token to either "x" or "o"
+
     let player = game.getCurrentPlayer().token;
     let playerToken = "";
     if (player === 2) {
       playerToken = "o";
     } else {
-      playerToken = "x"
-    };
+      playerToken = "x";
+    }
 
-    console.log(`Current player is: ${player}`)
+    console.log(`Current player is: ${player}`);
+
+    if (!game.isGameActive()) {
+      statusText.textContent = "Game is over! Press reset to play again.";
+      console.log("Game is over! Please reset to play again.");
+      return; // Exit before placing token
+    }
+
     this.textContent = playerToken;
-    game.playRound(row, column)
+    game.playRound(row, column);
   });
+});
+
+const resetButton = document.querySelector(".reset");
+resetButton.addEventListener("click", function () {
+  game.resetAll();
 });
