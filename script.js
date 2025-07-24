@@ -307,7 +307,7 @@ document.querySelectorAll(".cell").forEach(function (cell) {
     console.log(`Current player is: ${player}`);
 
     if (!game.isGameActive()) {
-      statusText.textContent = "Game is over! Press reset to play again.";
+      statusText.textContent = "Game is over! Press reset.";
       console.log("Game is over! Please reset to play again.");
       return; // Exit before placing token
     }
